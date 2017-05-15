@@ -1,4 +1,5 @@
 #include "../salad_spinner_config.h"
+#include "steppers.c" // not pretty just for testing
 
 #include <usb_serial/usb_serial.h>
 
@@ -15,6 +16,7 @@ void status_check(void);
 int main(void)
 {
 	usb_init();
+	setup();
 
 	while (!usb_configured()); // wait
 	_delay_ms(1000);
@@ -32,10 +34,11 @@ int main(void)
 
 		while (1)
 		{
+			print("Waiting for byte");
 			int16_t byte = recv_byte();
 			if (byte == -1)
 			{
-				print("Woops Did not receive a byte");
+				print("Woops Did not receive a byte\n");
 				usb_serial_flush_input();
 				break;
 			}
@@ -45,6 +48,11 @@ int main(void)
 			{
 				case STATUS_CHECK:
 					status_check();
+					break;
+				case TEST_BYTE:
+					print("Starting Loop"\n);
+					loop();
+					print("Loop Done\n");
 					break;
 				default:
 					break;
