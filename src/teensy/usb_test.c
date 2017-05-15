@@ -5,6 +5,7 @@
 
 #include <util/delay.h>
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -16,7 +17,7 @@ void status_check(void);
 int main(void)
 {
 	usb_init();
-	setup();
+	// setup();
 
 	while (!usb_configured()); // wait
 	_delay_ms(1000);
@@ -32,6 +33,8 @@ int main(void)
 		// "AT command", which can still be buffered.
 		usb_serial_flush_input();
 
+		DDRD |= (1<<PD6);
+
 		while (1)
 		{
 			print("Waiting for byte");
@@ -42,22 +45,24 @@ int main(void)
 				usb_serial_flush_input();
 				break;
 			}
-			print("Byte: 0x%02x\n", byte);
+			PORTD ^= (1<<PD6);
+			// print("Byte: 0x%02x\n", byte);
+			usb_serial_putchar(byte);
 
-			switch (byte)
-			{
-				case STATUS_CHECK:
-					status_check();
-					break;
-				case TEST_BYTE:
-					print("Starting Loop"\n);
-					loop();
-					print("Loop Done\n");
-					break;
-				default:
-					break;
-			}
-			usb_serial_flush_input();
+			// switch (byte)
+			// {
+			// 	case STATUS_CHECK:
+			// 		status_check();
+			// 		break;
+			// 	// case TEST_BYTE:
+			// 	// 	print("Starting Loop\n");
+			// 	// 	loop();
+			// 	// 	print("Loop Done\n");
+			// 		// break;
+			// 	default:
+			// 		break;
+			// }
+			// usb_serial_flush_input();
 		}
 	}
 
@@ -86,6 +91,7 @@ void print(const char* format, ...)
 
 	for (unsigned int i = 0; i < strlen(buffer); ++i)
 		usb_serial_putchar(buffer[i]);
+	usb_serial_putchar(0);
 }
 
 int16_t recv_byte()
