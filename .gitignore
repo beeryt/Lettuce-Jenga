@@ -1,3 +1,13 @@
+src/computervision/build
+
+# AVR files
+*.eep
+*.lss
+*.lst
+*.map
+*.sym
+*.dep
+
 # Object files
 *.o
 *.ko
