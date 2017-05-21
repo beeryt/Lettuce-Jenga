@@ -1,4 +1,4 @@
-#include "../salad_spinner_config.h"
+#include "../salad_spinner_global.h"
 
 #include <usb_serial/usb_serial.h>
 
