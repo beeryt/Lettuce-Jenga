@@ -122,13 +122,13 @@ void setup() {
   Serial.begin(9600);
   pinMode(spin_x,OUTPUT); 
   pinMode(dpin_x,OUTPUT);
-  pinMode(hpin_x, INPUT);
+  pinMode(hpin_x, INPUT_PULLUP);
   pinMode(spin_y,OUTPUT); 
   pinMode(dpin_y,OUTPUT);
-  pinMode(hpin_y, INPUT);
+  pinMode(hpin_y, INPUT_PULLUP);
   pinMode(spin_z,OUTPUT); 
   pinMode(dpin_z,OUTPUT);
-  pinMode(hpin_z, INPUT);
+  pinMode(hpin_z, INPUT_PULLUP);
 
   StepperInitialize();
 
@@ -185,22 +185,23 @@ void HomeX()
 
 void HomeY()
 {
-  while (!Y.endstop_home)
+  while (Y.endstop_home)
   {
     Y.steps = 5;
     while (Y.steps); // wait
   }
-
+  KillMotors();
   Y.delta = 0;
 }
 
 void HomeZ()
 {
-  while (!Z.endstop_home)
+  while (digitalRead(hpin_z) == HIGH)
   {
-    Z.steps = 5;
+    Z.steps = -5;
     while (Z.steps); // wait
   }
+  KillMotors();
   Z.delta = 0;
 }
 
