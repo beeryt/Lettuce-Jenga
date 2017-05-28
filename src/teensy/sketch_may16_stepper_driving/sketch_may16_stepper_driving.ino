@@ -15,8 +15,8 @@ const int dpin_x = A5;
 const int hpin_x = A0;
 const int sleepx = 12;
 
-const int spin_y = A6;
-const int dpin_y = A7;
+const int spin_y = A7;
+const int dpin_y = A6;
 const int hpin_y = A1;
 const int sleepy = 13;
 
@@ -24,6 +24,12 @@ const int spin_z = A8;
 const int dpin_z = A9;
 const int hpin_z = A2;
 const int sleepz = 14;
+
+const int arbiter_in = 21;
+const int arbiter_out = 18;
+
+volatile bool turnStart = 0;
+volatile bool turnEnd = 1;
 
 volatile StepperMotor X, Y, Z;
 
@@ -108,7 +114,7 @@ void MotorCallback()
   count_x++;
   count_y++;
   count_z++;
-  debug_counter++;
+//  debug_counter++;
 
   // Roll over if > step_delay
   count_x %= X.step_delay + 1;
@@ -120,6 +126,7 @@ void MotorCallback()
 void setup() {
   // Sets the two pins as Outputs
   Serial.begin(9600);
+  pinMode(11,OUTPUT);
   pinMode(spin_x,OUTPUT); 
   pinMode(dpin_x,OUTPUT);
   pinMode(hpin_x, INPUT_PULLUP);
@@ -185,10 +192,10 @@ void HomeX()
 
 void HomeY()
 {
-  while (Y.endstop_home)
+  while (digitalRead(hpin_y) == HIGH)
   {
     Y.steps = 5;
-    while (Y.steps); // wait
+    while (Z.steps); // wait
   }
   KillMotors();
   Y.delta = 0;
@@ -238,6 +245,13 @@ void CheckSerial()
       default:
         Serial.println("Command not recognized");
     }
+    Serial.print("X: ");
+    StepperDebug(X);
+    Serial.print("Y: ");
+    StepperDebug(Y);
+    Serial.print("Z: ");
+    StepperDebug(Z);
+    Serial.println();
 
     SerialFlush();
   }
@@ -248,6 +262,13 @@ void loop()
   X.endstop_home = digitalRead(hpin_x);
   Y.endstop_home = digitalRead(hpin_y);
   Z.endstop_home = digitalRead(hpin_z);
+  turnStart = digitalRead(arbiter_in);
+
+  if (X.steps || Y.steps || Z.steps)
+  {
+    digitalWrite(11, HIGH);
+  }
+  else digitalWrite(11,LOW);
 
   CheckSerial();
 }

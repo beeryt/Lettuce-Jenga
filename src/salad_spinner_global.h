@@ -7,6 +7,11 @@
 #define ENDSTOP_HIT 23
 #define STATUS_CHECK 69
 
+#define STEPS_PER_BLOCK		74
+#define STEPS_TO_TOWER_TOP	600
+#define STEPS_TO_DEPLOY		1500
+#define STEPS_PER_90		700
+
 struct StepperMotor
 {
 	int delta;		// delta steps since homing

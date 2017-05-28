@@ -13,13 +13,13 @@
 // Declare L298N Dual H-Bridge Motor Controller directly since there is not a library to load.
 
 // Motor 1
-int dir1PinA = 21;
-int dir2PinA = 20;
+int dir1PinA = 17;
+int dir2PinA = 16;
 int speedPinA = 15; // Needs to be a PWM pin to be able to control motor speed
 
 // Motor 2
-int dir1PinB = 19;
-int dir2PinB = 18;
+int dir1PinB = 12;
+int dir2PinB = 13;
 int speedPinB = 14; // Needs to be a PWM pin to be able to control motor speed
 
 void setup() {  // Setup runs once per reset
@@ -37,6 +37,70 @@ pinMode(speedPinB,OUTPUT);
 
 }
 
+void grip()
+{
+ 
+  analogWrite(speedPinA, 170);//Sets speed variable via PWM 
+  digitalWrite(dir1PinA, LOW);
+  digitalWrite(dir2PinA, HIGH);
+  Serial.println("Motor 1 Grip"); // Prints out “Motor 1 Forward” on the serial monitor
+  Serial.println("   "); // Creates a blank line printed on the serial monitor
+
+  delay(750);
+  
+  analogWrite(speedPinA, 0);
+  digitalWrite(dir1PinA, LOW);
+  digitalWrite(dir2PinA, HIGH);
+}
+
+void ungrip()
+{
+ 
+  analogWrite(speedPinA, 170);//Sets speed variable via PWM 
+  digitalWrite(dir1PinA, HIGH);
+  digitalWrite(dir2PinA, LOW);
+  Serial.println("Motor Ungrip"); // Prints out “Motor 1 Forward” on the serial monitor
+  Serial.println("   "); // Creates a blank line printed on the serial monitor
+
+  delay(500);
+  
+  analogWrite(speedPinA, 0);
+  digitalWrite(dir1PinA, LOW);
+  digitalWrite(dir2PinA, HIGH);
+}
+
+void pull()
+{
+ 
+  analogWrite(speedPinB, 170);//Sets speed variable via PWM 
+  digitalWrite(dir1PinB, LOW);
+  digitalWrite(dir2PinB, HIGH);
+  Serial.println("Motor 2 Back"); // Prints out “Motor 1 Forward” on the serial monitor
+  Serial.println("   "); // Creates a blank line printed on the serial monitor
+
+  delay(800);
+  
+  analogWrite(speedPinB, 0);
+  digitalWrite(dir1PinB, LOW);
+  digitalWrite(dir2PinB, HIGH);
+}
+
+void forward()
+{
+ 
+  analogWrite(speedPinB, 170);//Sets speed variable via PWM 
+  digitalWrite(dir1PinB, HIGH);
+  digitalWrite(dir2PinB, LOW);
+  Serial.println("Motor 2 Forward"); // Prints out “Motor 1 Forward” on the serial monitor
+  Serial.println("   "); // Creates a blank line printed on the serial monitor
+
+  delay(800);
+  
+  analogWrite(speedPinB, 0);
+  digitalWrite(dir1PinB, LOW);
+  digitalWrite(dir2PinB, HIGH); 
+}
+
 void loop() {
 
 // Initialize the Serial interface:
@@ -47,10 +111,15 @@ int speed; // Local variable
 
 switch (inByte) {
 
+case 'g': grip(); break;
+case 'u': ungrip(); break;
+case 'b': pull(); break;
+case 'f': forward(); break;
+
 //______________Motor 1______________
 
 case '1': // Motor 1 Forward
-analogWrite(speedPinA, 127);//Sets speed variable via PWM 
+analogWrite(speedPinA, 170);//Sets speed variable via PWM 
 digitalWrite(dir1PinA, LOW);
 digitalWrite(dir2PinA, HIGH);
 Serial.println("Motor 1 Forward"); // Prints out “Motor 1 Forward” on the serial monitor
@@ -66,7 +135,7 @@ Serial.println("   ");
 break;
 
 case '3': // Motor 1 Reverse
-analogWrite(speedPinA, 127);
+analogWrite(speedPinA, 170);
 digitalWrite(dir1PinA, HIGH);
 digitalWrite(dir2PinA, LOW);
 Serial.println("Motor 1 Reverse");
