@@ -37,16 +37,11 @@ int main(void)
 		exit(1);
 	}
 
-	char str_stepper[300];
-	char str_gripper[300];
+	int i = 0;
 
 	// Shell loop
 	while (1)
 	{
-		usleep(30000);
-		while (fread(str_stepper, 1, 300, file_stepper));
-		while (fread(str_gripper, 1, 300, file_gripper));
-
 		// Prompt user
 		char* input = readline("> ");
 		if (input == 0) break;
@@ -64,24 +59,24 @@ int main(void)
 			case 'x':
 			case 'y':
 			case 'z':
-			case 'h':	fprintf(file_stepper, "%s", input);
+			case 'h':	i = fprintf(file_stepper, "%s", input);
+						fflush(file_stepper);
+						if (i < 0) perror("fprintf: file_stepper");
 			break;
 
+			case '1':
+			case '2':
 			case 'g':
 			case 'u':
 			case 'f':
-			case 'b':	fprintf(file_gripper, "%s", input);
+			case 'b':	i = fprintf(file_gripper, "%s", input);
+						fflush(file_gripper);
+						if (i < 0) perror("fprintf: file_gripper");
 			break;
 
 			default: printf("teleop command not supported: %d\n", input[0]);
-					fprintf(file_stepper, "~");
-					fprintf(file_gripper, "~");
 		}
 		free(input);
-		while (fread(str_stepper, 1, 300, file_stepper))
-			printf("%s", str_stepper);
-		while (fread(str_gripper, 1, 300, file_gripper))
-			printf("%s", str_gripper);
 	}
 
 	printf("\nExiting\n");
