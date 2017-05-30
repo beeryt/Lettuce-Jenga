@@ -37,68 +37,33 @@ pinMode(speedPinB,OUTPUT);
 
 }
 
+void moveMotor(int speedPin, int dir1Pin, int dir2Pin, int dir, int dur, byte pwm_value=170)
+{
+  analogWrite(speedPin, pwm_value);
+  digitalWrite(dir1Pin, !dir);
+  digitalWrite(dir2Pin, dir);
+  delay(dur);
+  analogWrite(speedPin, 0);
+}
+
 void grip()
 {
- 
-  analogWrite(speedPinA, 170);//Sets speed variable via PWM 
-  digitalWrite(dir1PinA, LOW);
-  digitalWrite(dir2PinA, HIGH);
-  Serial.println("Motor 1 Grip"); // Prints out “Motor 1 Forward” on the serial monitor
-  Serial.println("   "); // Creates a blank line printed on the serial monitor
-
-  delay(750);
-  
-  analogWrite(speedPinA, 0);
-  digitalWrite(dir1PinA, LOW);
-  digitalWrite(dir2PinA, HIGH);
+  moveMotor(speedPinA, dir1PinA, dir2PinA, HIGH, 750);
 }
 
 void ungrip()
 {
- 
-  analogWrite(speedPinA, 170);//Sets speed variable via PWM 
-  digitalWrite(dir1PinA, HIGH);
-  digitalWrite(dir2PinA, LOW);
-  Serial.println("Motor Ungrip"); // Prints out “Motor 1 Forward” on the serial monitor
-  Serial.println("   "); // Creates a blank line printed on the serial monitor
-
-  delay(500);
-  
-  analogWrite(speedPinA, 0);
-  digitalWrite(dir1PinA, LOW);
-  digitalWrite(dir2PinA, HIGH);
+  moveMotor(speedPinA, dir1PinA, dir2PinA, LOW, 500);
 }
 
 void pull()
 {
- 
-  analogWrite(speedPinB, 170);//Sets speed variable via PWM 
-  digitalWrite(dir1PinB, LOW);
-  digitalWrite(dir2PinB, HIGH);
-  Serial.println("Motor 2 Back"); // Prints out “Motor 1 Forward” on the serial monitor
-  Serial.println("   "); // Creates a blank line printed on the serial monitor
-
-  delay(800);
-  
-  analogWrite(speedPinB, 0);
-  digitalWrite(dir1PinB, LOW);
-  digitalWrite(dir2PinB, HIGH);
+  moveMotor(speedPinB, dir1PinB, dir2PinB, HIGH, 800);
 }
 
 void forward()
 {
- 
-  analogWrite(speedPinB, 170);//Sets speed variable via PWM 
-  digitalWrite(dir1PinB, HIGH);
-  digitalWrite(dir2PinB, LOW);
-  Serial.println("Motor 2 Forward"); // Prints out “Motor 1 Forward” on the serial monitor
-  Serial.println("   "); // Creates a blank line printed on the serial monitor
-
-  delay(800);
-  
-  analogWrite(speedPinB, 0);
-  digitalWrite(dir1PinB, LOW);
-  digitalWrite(dir2PinB, HIGH); 
+  moveMotor(speedPinB, dir1PinB, dir2PinB, LOW, 800);
 }
 
 void loop() {
@@ -107,7 +72,8 @@ void loop() {
 
 if (Serial.available() > 0) {
 int inByte = Serial.read();
-int speed; // Local variable
+
+int val, dir, dur;
 
 switch (inByte) {
 
@@ -119,53 +85,17 @@ case 'f': forward(); break;
 //______________Motor 1______________
 
 case '1': // Motor 1 Forward
-analogWrite(speedPinA, 170);//Sets speed variable via PWM 
-digitalWrite(dir1PinA, LOW);
-digitalWrite(dir2PinA, HIGH);
-Serial.println("Motor 1 Forward"); // Prints out “Motor 1 Forward” on the serial monitor
-Serial.println("   "); // Creates a blank line printed on the serial monitor
+val = Serial.parseInt();
+dir = val > 0 ? 1 : 0;
+dur = abs(val);
+moveMotor(speedPinA, dir1PinA, dir2PinA, dir, dur);
 break;
 
 case '2': // Motor 1 Stop (Freespin)
-analogWrite(speedPinA, 0);
-digitalWrite(dir1PinA, LOW);
-digitalWrite(dir2PinA, HIGH);
-Serial.println("Motor 1 Stop");
-Serial.println("   ");
-break;
-
-case '3': // Motor 1 Reverse
-analogWrite(speedPinA, 170);
-digitalWrite(dir1PinA, HIGH);
-digitalWrite(dir2PinA, LOW);
-Serial.println("Motor 1 Reverse");
-Serial.println("   ");
-break;
-
-//______________Motor 2______________
-
-case '4': // Motor 2 Forward
-analogWrite(speedPinB, 127);
-digitalWrite(dir1PinB, LOW);
-digitalWrite(dir2PinB, HIGH);
-Serial.println("Motor 2 Forward");
-Serial.println("   ");
-break;
-
-case '5': // Motor 1 Stop (Freespin)
-analogWrite(speedPinB, 0);
-digitalWrite(dir1PinB, LOW);
-digitalWrite(dir2PinB, HIGH);
-Serial.println("Motor 2 Stop");
-Serial.println("   ");
-break;
-
-case '6': // Motor 2 Reverse
-analogWrite(speedPinB, 127);
-digitalWrite(dir1PinB, HIGH);
-digitalWrite(dir2PinB, LOW);
-Serial.println("Motor 2 Reverse");
-Serial.println("   ");
+val = Serial.parseInt();
+dir = val > 0 ? 1 : 0;
+dur = abs(val);
+moveMotor(speedPinB, dir1PinB, dir2PinB, dir, dur);
 break;
 
 default:

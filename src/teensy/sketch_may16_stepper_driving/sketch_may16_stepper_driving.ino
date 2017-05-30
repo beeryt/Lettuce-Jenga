@@ -46,8 +46,8 @@ volatile int count_z = 0;
 void StepperInitialize()
 {
   X.step_delay = 20;
-  Y.step_delay = 20;
-  Z.step_delay = 50;
+  Y.step_delay = 50;
+  Z.step_delay = 30;
 }
 
 /**
@@ -58,7 +58,7 @@ void StepperDebug(volatile StepperMotor &m)
 {
   char str[500];
   sprintf(str, "delta: %d, steps: %d, delay: %d\n", m.delta, m.steps, m.step_delay);
-  Serial.print(str);
+  // Serial.print(str);
 }
 
 /**
@@ -92,13 +92,13 @@ void MotorCallback()
   static int debug_counter = 0;
   if (debug_counter == debug_delay)
   {   
-    Serial.print("X: ");
+    // Serial.print("X: ");
     StepperDebug(X);
-    Serial.print("Y: ");
+    // Serial.print("Y: ");
     StepperDebug(Y);
-    Serial.print("Z: ");
+    // Serial.print("Z: ");
     StepperDebug(Z);
-    Serial.println();
+    // Serial.println();
   }
   
   if (count_x == X.step_delay && X.steps != 0)
@@ -142,7 +142,7 @@ void setup() {
   Timer1.initialize(100);
   Timer1.attachInterrupt(MotorCallback);
   Timer1.start();
-  Serial.println("Welcome to the world of tomorrow");
+  // Serial.println("Welcome to the world of tomorrow");
   StepperDebug(X);
   StepperDebug(Y);
   StepperDebug(Z);
@@ -158,7 +158,7 @@ void MotorSteps(byte b)
 {
     if (X.steps || Y.steps || Z.steps) // we're still stepping. Kindly ignore the user.
     {
-      Serial.println("Teensy is busy. Please kindly be ignored. Thank you, user.");
+      // Serial.println("Teensy is busy. Please kindly be ignored. Thank you, user.");
       return;
     }
 
@@ -194,7 +194,7 @@ void HomeY()
 {
   while (digitalRead(hpin_y) == HIGH)
   {
-    Y.steps = 5;
+    Y.steps = 1;
     while (Z.steps); // wait
   }
   KillMotors();
@@ -205,7 +205,7 @@ void HomeZ()
 {
   while (digitalRead(hpin_z) == HIGH)
   {
-    Z.steps = -5;
+    Z.steps = -1;
     while (Z.steps); // wait
   }
   KillMotors();
@@ -243,15 +243,16 @@ void CheckSerial()
       case '0': KillMotors();
         break;    
       default:
-        Serial.println("Command not recognized");
+        break;
+        // Serial.println("Command not recognized");
     }
-    Serial.print("X: ");
+    // Serial.print("X: ");
     StepperDebug(X);
-    Serial.print("Y: ");
+    // Serial.print("Y: ");
     StepperDebug(Y);
-    Serial.print("Z: ");
+    // Serial.print("Z: ");
     StepperDebug(Z);
-    Serial.println();
+    // Serial.println();
 
     SerialFlush();
   }
