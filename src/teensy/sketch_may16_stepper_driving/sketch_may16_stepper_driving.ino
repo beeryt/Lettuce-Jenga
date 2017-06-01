@@ -241,7 +241,9 @@ void CheckSerial()
         Home(Serial.read());
         break;
       case '0': KillMotors();
-        break;    
+        break;
+      case 'a': digitalWrite(arbiter_in, Serial.parseInt());
+        break;
       default:
         break;
         // Serial.println("Command not recognized");
